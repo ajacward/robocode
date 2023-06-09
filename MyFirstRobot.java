@@ -62,13 +62,8 @@ public class MyFirstRobot extends AdvancedRobot {
 
 		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
 			double firePower = Math.min(500 / enemy.getDistance(), 3);
-			double bulletSpeed = 20 - firePower * 3;
-			long time = (long) (enemy.getDistance() / bulletSpeed);
-			double futureX = enemy.getFutureX(time);
-			double futureY = enemy.getFutureY(time);
-			double absDeg = absoluteBearing(getX(), getY(), futureX, futureY);
-
-			setTurnGunRight(normalizeBearing(absDeg - getGunHeading()));
+			long time = (long) (enemy.getDistance() / 20 - firePower * 3);
+			setTurnGunRight(normalizeBearing(absoluteBearing(getX(), getY(), enemy.getFutureX(time), enemy.getFutureY(time)) - getGunHeading()));
 			setFire(firePower);
 		}
 	}
@@ -112,17 +107,19 @@ public class MyFirstRobot extends AdvancedRobot {
 	double absoluteBearing(double x1, double y1, double x2, double y2) {
 		double xo = x2 - x1;
 		double yo = y2 - y1;
-		double hyp = Point2D.distance(x1, y1, x2, y2);
-		double arcSin = Math.toDegrees(Math.asin(xo / hyp));
+		double arcSin = Math.toDegrees(Math.asin(xo / Point2D.distance(x1, y1, x2, y2)));
 		double bearing = 0;
 
 		if (xo > 0 && yo > 0) {
 			bearing = arcSin;
-		} else if (xo < 0 && yo > 0) {
+		}
+		if (xo < 0 && yo > 0) {
 			bearing = 360 + arcSin;
-		} else if (xo > 0 && yo < 0) {
+		}
+		if (xo > 0 && yo < 0) {
 			bearing = 180 - arcSin;
-		} else if (xo < 0 && yo < 0) {
+		}
+		if (xo < 0 && yo < 0) {
 			bearing = 180 - arcSin;
 		}
 
